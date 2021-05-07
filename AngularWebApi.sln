@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30907.101
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AngularWebApi", "AngularWebApi\AngularWebApi.csproj", "{2DC635C5-5AE1-4043-BC31-F1179AF6DF2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AngularWebApi", "AngularWebApi\AngularWebApi.csproj", "{2DC635C5-5AE1-4043-BC31-F1179AF6DF2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{8219FC40-EA6D-4EF7-B4A8-FD60585A3073}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DAL", "DAL\DAL.csproj", "{8219FC40-EA6D-4EF7-B4A8-FD60585A3073}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "App", "App\App.csproj", "{66556CEE-14CF-46E1-A85F-DCD39FCC760D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{8219FC40-EA6D-4EF7-B4A8-FD60585A3073}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8219FC40-EA6D-4EF7-B4A8-FD60585A3073}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8219FC40-EA6D-4EF7-B4A8-FD60585A3073}.Release|Any CPU.Build.0 = Release|Any CPU
+		{66556CEE-14CF-46E1-A85F-DCD39FCC760D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{66556CEE-14CF-46E1-A85F-DCD39FCC760D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{66556CEE-14CF-46E1-A85F-DCD39FCC760D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{66556CEE-14CF-46E1-A85F-DCD39FCC760D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
