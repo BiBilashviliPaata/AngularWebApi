@@ -15,14 +15,6 @@ namespace DAL.Context
         }
 
         public DbSet<UserModel> User { get; set; }
-        public DbSet<CompanyModel> Company { get; set; }
-
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<UserModel>()
-                .HasMany(c => c.Company)
-                .WithMany(c => c.Users);
-        }
 
     }
 }
