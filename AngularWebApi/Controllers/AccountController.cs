@@ -1,4 +1,5 @@
-﻿using DAL.Context;
+﻿using App.Interfaces;
+using DAL.Context;
 using DAL.DTO_s;
 using DAL.Entities;
 using Microsoft.AspNetCore.Http;
@@ -19,14 +20,17 @@ namespace AngularWebApi.Controllers
     {
         private readonly AppDbContext _dbcontext;
 
-        public AccountController(AppDbContext dbcontext)
+        private readonly ITokenService _tokenservice;
+
+        public AccountController(AppDbContext dbcontext , ITokenService tokenService)
         {
             _dbcontext = dbcontext;
+            _tokenservice = tokenService;
         }
 
         [HttpPost("register")]
 
-        public async Task<ActionResult<UserModel>> Register(RegisterDTO registerDTO)
+        public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             if (await Userexist(registerDTO.Username)) return BadRequest("UserName is Already Taken");
 
@@ -43,12 +47,16 @@ namespace AngularWebApi.Controllers
             _dbcontext.Add(user);
             await _dbcontext.SaveChangesAsync();
 
-            return user;
+            return new UserDTO
+            {
+                Username = user.Name,
+                Token = _tokenservice.CreateToken(user)
+            };
 
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserModel>> Login(LoginDTO loginDTO)
+        public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
             var user = await _dbcontext.User
                 .SingleOrDefaultAsync(u => u.Name == loginDTO.Username);
@@ -66,7 +74,11 @@ namespace AngularWebApi.Controllers
                 if (computerhash[i] != user.PasswordHash[i]) return Unauthorized("Invaild Password");
             }
 
-            return user;
+            return new UserDTO
+            {
+                Username = user.Name,
+                Token = _tokenservice.CreateToken(user)
+            };
 
         }
 
