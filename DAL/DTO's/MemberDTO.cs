@@ -19,6 +19,7 @@ namespace DAL.DTO_s
         public string LookingFor { get; set; }
         public string Interests { get; set; }
         public string Country { get; set; }
+        public string City { get; set; }
         public string Age { get; set; }
         public ICollection<PhotoDTO> Photos { get; set; }
 
