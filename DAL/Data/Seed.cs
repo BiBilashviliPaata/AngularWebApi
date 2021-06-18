@@ -24,7 +24,7 @@ namespace DAL.Data
             {
                 using var hmac = new HMACSHA512();
 
-                user.Name = user.Name.ToLower();
+                user.Username = user.Username.ToLower();
                 user.PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes("Pa$$w0rd"));
                 user.PasswordSalt = hmac.Key;
 

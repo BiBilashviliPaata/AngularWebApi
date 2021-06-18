@@ -2,7 +2,9 @@
 using DAL.Context;
 using DAL.DTO_s;
 using DAL.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -38,7 +40,7 @@ namespace AngularWebApi.Controllers
 
             var user = new UserModel
             {
-                Name = registerDTO.Username.ToLower(),
+                Username = registerDTO.Username.ToLower(),
                 PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
                 PasswordSalt = hmac.Key
             };
@@ -49,21 +51,19 @@ namespace AngularWebApi.Controllers
 
             return new UserDTO
             {
-                Username = user.Name,
-                Token = _tokenservice.CreateToken(user)
+                Username = user.Username,
+                Token = await _tokenservice.CreateToken(user)
             };
 
         }
+
 
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
             var user = await _dbcontext.User
-                .SingleOrDefaultAsync(u => u.Name == loginDTO.Username);
-            if(user == null)
-            {
-                return BadRequest("Invaild Username");
-            }
+                .SingleOrDefaultAsync(u => u.Username == loginDTO.Username.ToLower());
+            if(user == null) return Unauthorized("Invalid username");
 
             using var hmac = new HMACSHA512(user.PasswordSalt);
 
@@ -76,15 +76,15 @@ namespace AngularWebApi.Controllers
 
             return new UserDTO
             {
-                Username = user.Name,
-                Token = _tokenservice.CreateToken(user)
+                Username = user.Username,
+                Token = await _tokenservice.CreateToken(user)
             };
 
         }
 
         private async Task<bool> Userexist(string username)
         {
-            return await _dbcontext.User.AnyAsync(u => u.Name == username.ToLower());
+            return await _dbcontext.User.AnyAsync(u => u.Username == username.ToLower());
         }
 
 

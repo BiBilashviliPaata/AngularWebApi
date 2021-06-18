@@ -40,7 +40,7 @@ namespace App.Repository
         {
             return await _dbContext.User
                   .Include(p=>p.Photos)
-                  .SingleOrDefaultAsync(x => x.Name == username);
+                  .SingleOrDefaultAsync(x => x.Username == username);
         }
 
         public async Task<bool> SaveAllAsync()
@@ -57,7 +57,7 @@ namespace App.Repository
         public async Task<MemberDTO> GetMemberAsync(string username)
         {
             return await _dbContext.User
-                .Where(x => x.Name == username)
+                .Where(x => x.Username == username)
                 .ProjectTo<MemberDTO>(_mapper.ConfigurationProvider)
                 .SingleOrDefaultAsync();
         }
