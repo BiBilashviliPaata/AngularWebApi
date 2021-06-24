@@ -6,6 +6,7 @@ using App.Interfaces;
 using App.Repository;
 using App.Services;
 using DAL.Context;
+using DAL.Entities;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.Negotiate;
@@ -24,8 +25,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
 using System.Text;
-
-
+using System.Threading.Tasks;
 
 namespace AngularWebApi
 {
@@ -58,12 +58,30 @@ namespace AngularWebApi
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"])),
                         ValidateIssuer = false,
-                        ValidateAudience = false
+                        ValidateAudience = false,
+                    };
+
+                    options.Events = new JwtBearerEvents
+                    {
+                        OnMessageReceived = context =>
+                        {
+                            var accessToken = context.Request.Query["access_token"];
+
+                            var path = context.HttpContext.Request.Path;
+                            if (!string.IsNullOrEmpty(accessToken) &&
+                                path.StartsWithSegments("/hubs"))
+                            {
+                                context.Token = accessToken;
+                            }
+
+                            return Task.CompletedTask;
+                        }
                     };
                 });
 
-            services.Configure<IdentityOptions>(options =>
-            options.ClaimsIdentity.UserIdClaimType = ClaimTypes.Name);
+
+            //services.Configure<IdentityOptions>(options =>
+            //options.ClaimsIdentity.UserIdClaimType = ClaimTypes.Name);
 
             services.AddSwaggerGen(c =>
             {
@@ -90,7 +108,7 @@ namespace AngularWebApi
             app.UseRouting();
 
             app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200"));
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

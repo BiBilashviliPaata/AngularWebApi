@@ -52,7 +52,7 @@ namespace AngularWebApi.Controllers
             return new UserDTO
             {
                 Username = user.Username,
-                Token = await _tokenservice.CreateToken(user)
+                Token = await _tokenservice.CreateToken(user),
             };
 
         }
@@ -61,24 +61,34 @@ namespace AngularWebApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var user = await _dbcontext.User
-                .SingleOrDefaultAsync(u => u.Username == loginDTO.Username.ToLower());
-            if(user == null) return Unauthorized("Invalid username");
-
-            using var hmac = new HMACSHA512(user.PasswordSalt);
-
-            var computerhash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
-
-            for(int i = 0; i < computerhash.Length; i++)
+            try
             {
-                if (computerhash[i] != user.PasswordHash[i]) return Unauthorized("Invaild Password");
+                var user = await _dbcontext.User
+                    .Include(p => p.Photos)
+                    .SingleOrDefaultAsync(u => u.Username == loginDTO.Username.ToLower());
+                if (user == null) return Unauthorized("Invalid username");
+
+                using var hmac = new HMACSHA512(user.PasswordSalt);
+
+                var computerhash = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.Password));
+
+                for (int i = 0; i < computerhash.Length; i++)
+                {
+                    if (computerhash[i] != user.PasswordHash[i]) return Unauthorized("Invaild Password");
+                }
+
+                return new UserDTO
+                {
+                    Username = user.Username,
+                    Token = await _tokenservice.CreateToken(user),
+                    PhotoUrl = user.Photos.FirstOrDefault(x => x.IsMain)?.Url
+                };
+            }
+            catch(Exception ex)
+            {
+                return BadRequest();
             }
 
-            return new UserDTO
-            {
-                Username = user.Username,
-                Token = await _tokenservice.CreateToken(user)
-            };
 
         }
 
